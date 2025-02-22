@@ -10,10 +10,9 @@ Select Count(*) as '# of Records'
 From healthcaredataset
 
 --2 Show maximum age of patients addmited 
-	Select name, Max(age) as 'Max Age of Patients Admitted'
+	Select  Max(age) as 'Max Age of Patients Admitted'
 	From healthcaredataset
-	Group By name, age
-	Order By Desc
+	
 
 -- 3 Average age of people hospitalized
 Select AVG(age) as 'AVG Age of People Hospitalized'
@@ -21,62 +20,68 @@ From healthcaredataset
 
 
 -- 4 Patients Hospitalized Age from Max to Min
-Select name, age 
+Select age, Count(age) as 'Age count'
 from healthcaredataset
+Group by Age
 Order BY age desc
 
 -- 5 Calculating Max Count of patients on basis of total patiens in respect to age
-Select MAX(count) as 'Max Count of Patients in respect to Age'
+Select age, MAX(count) as 'Max Count of Patients in respect to Age'
 From
 (
 Select  age, count(*) as Count
 From healthcaredataset
 Group By age 
 ) D
+Group By age
 
--- Ranking age on the number of patients hospitalized
-Select Name, Age,
-DENSE_RANK() OVER (order by age) As Rank
+--6 Ranking age on the number of patients hospitalized 
+Select Age,
+count(Age) as 'Total', 
+DENSE_RANK() OVER (order by count(age) DESC, age DESC) As Rank
 From healthcaredataset
+Group By Age
+HAVING Count(age) > AVG(Age)
 
---Find Count of Medical Condition of patients and listing it by Max no. of patients
+  
+/*
+
+SELECT AGE, COUNT(AGE) As Total, dense_RANK() OVER(ORDER BY COUNT(AGE) DESC, age DESC) as Ranking_Admitted 
+FROM HealthcareDataSet
+GROUP BY age
+HAVING COUNT(AGE) > Avg(age);
+
+*/
+7 Find Count of Medical Condition of patients and listing it by Max no. of patients
 
 Select [Medical Condition], Count (*) as 'Max no. of patients'
 From healthcaredataset
 Group By [Medical Condition]
 
---Finding Rank & MAX number of medicines recommended to patients based on Medical Condition pertaining to them
+--8 Finding Rank & MAX number of medicines recommended to patients based on Medical Condition pertaining to them
 
-Select [medical condition], COUNT(medication) as 'Max # of Medicines', 
+Select [medical condition],medication, COUNT(medication) as 'Max # of Medicines', 
 DENSE_RANK() OVER (order by COUNT(medication) DESC) as Rank
 FROM healthcaredataset
-Group By [Medical Condition]
+Group By [Medical Condition], medication
 
 
 
---Most Preffered Insurance Provider by Patients
+--9 Most Preffered Insurance Provider by Patients
 
-Select TOP 1 [Insurance Provider], MAX(Count) as Count
-From
-(
-Select [Insurance Provider], Count(*) as Count
+Select TOP 1  [Insurance Provider], Count(*) as Count
 From healthcaredataset
-Group By [Insurance Provider]
-) D 
 Group By [Insurance Provider]
 Order By Count DESC
 
 
---Most Preffered Hospital 
-Select TOP 1 Hospital, MAX(Count) as Count
-From
-(
-Select Hospital, Count(*) as Count
+--10 Most Preffered Hospital 
+
+Select TOP 1  Hospital, Count(*) as Count
 From healthcaredataset
 Group By Hospital
-) D
-Group By Hospital
 Order By Count DESC
+
 
 
 Select * from 
@@ -89,14 +94,14 @@ Select [Billing Amount]
 FROM HealthCareDataSet
 Where ISNUMERIC([Billing Amount]) = 0
 
---Identify Average Billing Amount by medical condition
+--11 Identify Average Billing Amount by medical condition
 Select [Medical Condition], AVG([Billing Amount]) from 
 healthcaredataset
 Group By [Medical Condition]
 
 
 
---Find Billing amount of patients admitted and number of days spent in respective hospital
+--12 Find Billing amount of patients admitted and number of days spent in respective hospital
 
 Select * from healthcaredataset
 
@@ -110,7 +115,7 @@ Alter Table healthcaredataset
 Alter Column [Discharge Date] DATE;
 
 
---Find total number of days spent by patient in a hospital for given medical condition
+--13 Find total number of days spent by patient in a hospital for given medical condition
 
 
 
@@ -119,7 +124,7 @@ Alter Column [Discharge Date] DATE;
 
 
 
---Find hospitals which were succesful in discharging patients after having test results as Normal with count of days taken to get results to Normal
+--14 Find hospitals which were succesful in discharging patients after having test results as Normal with count of days taken to get results to Normal
 
 
 Select Hospital, [Test Results]
@@ -130,7 +135,7 @@ Select Hospital, [Test Results]
 
 
 
---Calculate number of blood types of patients which lies between age 20 to 45
+--15 Calculate number of blood types of patients which lies between age 20 to 45
 
 Select [Blood Type], count(*) as 'Count of Blood Type'
 From healthcaredataset
@@ -140,7 +145,7 @@ Order By Count(*) DESC
 
 
 
---Find how many patients are Universal blood doners and Universal Blood reciever
+-- 16 Find how many patients are Universal blood doners and Universal Blood reciever
 
 Select Count(*) as 'Count of Uni Blood Doner & Uni Blood Reci'
 From healthcaredataset

@@ -158,6 +158,57 @@ From healthcaredataset
 Where [Blood Type] IN ('O-', 'AB+')
 Group By [Blood Type]
 
+--17 Provide a list of hospitals along with the count of patients admitted in the year 2024 and 2025
+
+Select * from HealthCareDataSet
+
+Select Hospital, Count(Name) as 'Count of Patients'
+From HealthCareDataSet
+Where YEAR([Date of Admission] ) IN('2024', '2025')
+Group BY Hospital
+Order by Count(Name) DESC
+
+Select Hospital, Count(Name) as 'Count of Patients'
+From HealthCareDataSet
+Where [Date of Admission] Between '2024' AND '2025'
+Group BY Hospital
+Order by Count(Name) DESC
+
+
+
+
+Alter table HealthCareDataSet
+Alter Column [Billing Amount] MONEY;
+
+
+--18 Find the average, minimum, and maximum billing amount for each insurance provider
+
+
+
+
+Select [Insurance Provider],
+AVG([Billing Amount]) as AverageBillingAmount,
+MIN([Billing Amount]) as MinBillingAmount,
+MAX([Billing Amount]) as MaxBillingAmount
+From HealthCareDataSet
+Group By [Insurance Provider]
+
+
+
+
+--19 Create new column that categorizes patients as high, medium, or low based on their medical condition
+
+Select Name as PatientName,
+[Medical Condition],
+CASE WHEN [Medical Condition] = 'Obesity' THEN 'Low'
+WHEN [Medical Condition] IN ('Arthritis','Asthma', 'Hypertension') THEN 'Medium'
+WHEN [Medical Condition] IN ('Cancer','Diabetes') THEN 'High'
+ELSE ''
+END as 'Health Category'
+From HealthCareDataSet
+
+
+
 
 
 
